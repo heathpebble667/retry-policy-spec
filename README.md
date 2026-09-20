@@ -58,7 +58,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"time"
 
 	retrypolicy "github.com/heathpebble667/retry-policy-spec"
 )
@@ -76,13 +75,8 @@ func main() {
 		log.Fatalf("invalid retry policy: %v", err)
 	}
 
-	delay := policy.Backoff.Base
-	for attempt := 1; attempt <= policy.MaxAttempts; attempt++ {
-		fmt.Printf("attempt %d: wait %s\n", attempt, delay)
-		delay = time.Duration(float64(delay) * policy.Backoff.Multiplier)
-		if delay > policy.Backoff.Max {
-			delay = policy.Backoff.Max
-		}
+	for i, wait := range policy.Backoff.Delays(policy.MaxAttempts) {
+		fmt.Printf("after attempt %d, wait %s\n", i+1, wait)
 	}
 
 	// Policy implements String(), so it round-trips through its own
@@ -99,6 +93,7 @@ line 3: backoff.multiplier: must be greater than 1, got 1
 
 ## Status
 
-Early. The parser, printer, and test suite exist; there's no CLI yet and no
-helper for computing the delay sequence directly from a `Backoff` (the
-usage example above does it by hand). See the roadmap for what's next.
+Early. The parser, printer, `Backoff.Delays` helper, and test suite exist.
+Still missing: a CLI for validating and reformatting files in place, JSON
+and text marshaling for interop with non-Go services and config loaders,
+and fuzz testing of the parser.
