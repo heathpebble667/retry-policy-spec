@@ -91,9 +91,29 @@ A parse failure names the offending line:
 line 3: backoff.multiplier: must be greater than 1, got 1
 ```
 
+## CLI
+
+`cmd/retryfmt` validates and reformats policy files from the command line:
+
+```
+retryfmt [-l] [-w] [file ...]
+```
+
+With no files, it reads one policy from stdin and prints its canonical form
+to stdout. With files, it validates each one; `-l` lists the files whose
+formatting differs from canonical instead of printing anything, and `-w`
+rewrites each file in place. A file that fails to parse is reported on
+stderr as `name: message`, and retryfmt exits with status 1 after working
+through the rest.
+
+Install it with:
+
+```
+go install github.com/heathpebble667/retry-policy-spec/cmd/retryfmt@latest
+```
+
 ## Status
 
-Early. The parser, printer, `Backoff.Delays` helper, and test suite exist.
-Still missing: a CLI for validating and reformatting files in place, JSON
-and text marshaling for interop with non-Go services and config loaders,
-and fuzz testing of the parser.
+Early. The parser, printer, `Backoff.Delays` helper, `retryfmt` CLI, and
+test suite exist. Still missing: JSON and text marshaling for interop with
+non-Go services and config loaders, and fuzz testing of the parser.
